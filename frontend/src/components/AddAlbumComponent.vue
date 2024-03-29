@@ -5,7 +5,11 @@
     </div>
     <div class="form-container">
       <h1>Добавить альбом</h1>
-      <input v-model="searchQuery" placeholder="Исполнитель и название" type="text" />
+      <input
+        v-model="searchQuery"
+        placeholder="Исполнитель и название"
+        type="text"
+      />
       <div class="checkbox-container">
         <input type="checkbox" id="addMultipleFlag" v-model="addMultipleFlag" />
         <label for="addMultipleFlag">Добавить несколько</label>
@@ -26,7 +30,7 @@ const emit = defineEmits(["confirmUploadNewAlbum", "goToAlbumChoosing"]);
 
 async function addAlbum() {
   try {
-    const response = await fetch(`${backendAddress}/collection/album`, {
+    const response = await fetch(`${backendAddress}/album`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
