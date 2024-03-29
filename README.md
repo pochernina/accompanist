@@ -118,7 +118,14 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 - Show tracks collection with filters
 - Replace Font Awesome Icons with smth less bloated
 - Extract TrackLine component to reuse in collection
+- Hide last line when song ends in karaoke mode
+- Descriptive error messages on frontend (e.g. for Genius API)
+- Button "Open this song at Genius.com"
+- Add hint for clicking button on the last syllable when recoring (maybe even
+  color the last syllable of the last word of the line)
 - Add paging for albums & tracks
+- Put vocals track into "practice mode", mix with karaoke?
+- Add router to frontend (to support links like /album/123)
 - Download tracks' studio versions (ignore clip versions from YT Music)
 - Collection management: order of albums / stars / rating
 - Add editing text from frontend (to edit Genius parser's mistakes)
