@@ -9,14 +9,15 @@
       class="audio-player"
     ></audio>
     <div class="controls">
-      <button @click="recordTimecode" class="btn next-line">
-        Следующая строка
-      </button>
-      <button @click="recordInterludeEnd" class="btn end-interlude">
-        Конец проигрыша
-      </button>
+      <button @click="recordTimecode" class="btn">Следующая строка</button>
+      <button @click="recordInterludeEnd" class="btn">Конец проигрыша</button>
     </div>
-    <div class="lyrics">{{ lyricsLines[currentLineIndex] }}</div>
+    <div class="lyrics">
+      <p class="current-line">
+        {{ lyricsLines[currentLineIndex] }}
+      </p>
+      <p class="next-line">{{ lyricsLines?.[currentLineIndex + 1] }}</p>
+    </div>
   </div>
 </template>
 
@@ -107,12 +108,25 @@ const recordInterludeEnd = () => {
 }
 
 .lyrics {
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  width: 100%;
-  text-align: center;
+  position: relative;
+  white-space: pre-wrap;
+  font-size: 25px;
+  /* margin-top: 20px; */
+  line-height: 1.5;
+  padding: 30px; /* Добавлен внутренний отступ */
+  text-align: center; /* Выравнивание текста по центру */
+  /* background-color: #0093e9; */
+  /* color: white; */
+  /* background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%); */
+}
+
+.current-line,
+.next-line {
+  width: 100%; /* Обеспечивает полную ширину для выравнивания текста */
+  font-weight: bold;
+}
+
+.next-line {
+  font-weight: normal; /* Устанавливаем обычное начертание для следующей строки */
 }
 </style>

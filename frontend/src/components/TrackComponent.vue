@@ -65,6 +65,9 @@
               <button @click="toggleKaraokeRecordingMode" class="karaoke-toggle">
                 Переразметить караоке-текст
               </button>
+              <button @click="removeLyricsKaraoke" class="karaoke-toggle">
+                Удалить караоке-текст
+              </button>
             </div>
           </div>
         </div>
@@ -150,6 +153,12 @@ function handleToggleLyricsMode() {
     pageState.value = TrackPageStates.ShowKaraokeLyrics;
   } else {
     pageState.value = TrackPageStates.ShowPlainLyrics;
+  }
+}
+
+async function removeLyricsKaraoke() {
+  if (window.confirm("Вы уверены, что хотите удалить эту разметку?")) {
+    await handleUpdatedLyricsKaraoke(null);
   }
 }
 
@@ -414,9 +423,10 @@ watch(
 .marged-spinner {
   margin-top: 50px;
 }
+
 .karaoke-toggle {
   padding: 10px 20px;
-  margin: 10px 0;
+  margin: 10px 10px 10px 0;
   border: 1px solid #ccc;
   background-color: #f8f9fa;
   border-radius: 5px;
