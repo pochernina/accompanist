@@ -3,7 +3,15 @@
     <div @click="$emit('goToTrackChoosing')" class="go-back-button clickable">
       ← <slot>Назад</slot>
     </div>
-    <h2>{{ track.name }} by {{ album.artist.name }}</h2>
+    <h2>
+      <FavoriteIconComponent
+        :trackId="track.id"
+        :isFavorite="track.is_favorite"
+        class="favorite-component"
+        @toggleIsFavorite="handleToggleIsFavorite"
+      />
+      {{ track.name }} by {{ album.artist.name }}
+    </h2>
     <img :src="getStaticUrl(album.cover_path)" alt="Обложка альбома" class="album-cover" />
     <div class="songs-list">
       <div v-if="pageState === TrackPageStates.ShowSpinnerInsteadOfLyrics" class="marged-spinner">
@@ -94,6 +102,7 @@ import SpinnerComponent from "./SpinnerComponent.vue";
 import KaraokeLyricsComponent from "./KaraokeLyricsComponent.vue";
 import RecordTimecodesComponent from "./RecordTimecodesComponent.vue";
 import AudioComponent from "./AudioComponent.vue";
+import FavoriteIconComponent from "./FavoriteIconComponent.vue";
 
 const backendAddress = inject("backendAddress");
 const getStaticUrl = inject("getStaticUrl");
@@ -164,6 +173,27 @@ async function handleUpdatedLyricsKaraoke(lyrics_karaoke) {
   } catch (error) {
     console.error(error);
     alert("Failed to update karaoke lyrics");
+  }
+}
+
+async function handleToggleIsFavorite() {
+  try {
+    const response = await fetch(`${backendAddress}/track/${track.value.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        is_favorite: !track.value.is_favorite,
+      }),
+    });
+    track.value = await response.json();
+    if (!response.ok) {
+      throw new Error("Failed to update is_favorite");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Failed to update is_favorite");
   }
 }
 
@@ -402,5 +432,18 @@ watch(
 .karaoke-toggle:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.5);
+}
+
+.favorite-component {
+  position: relative;
+  top: 0.1em;
+  padding: 0 5px;
+}
+
+.track-heading {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700; /* Bold */
+  font-size: 24px; /* This is a common h2 size, adjust as needed */
+  line-height: 1.2; /* Adjust based on your design */
 }
 </style>

@@ -11,17 +11,17 @@
           v-for="track in album.tracks"
           :key="track.id"
           @click="$emit('selectTrack', track.id)"
-          :class="{ 'has-karaoke-lyrics': track.lyrics_karaoke }"
+          :class="{ 'has-karaoke-lyrics': track.has_lyrics_karaoke }"
         >
           <div class="song-info">
             <div class="song-title clickable">
-              <button
-                class="favorite-button"
-                :class="{ 'is-favorite': track.is_favorite }"
-                @click.stop="handleToggleIsFavorite(track)"
-              >
-                <FontAwesomeIcon class="favorite-icon" :icon="faHeart" />
-              </button>
+              <FavoriteIconComponent
+                :trackId="track.id"
+                :isFavorite="track.is_favorite"
+                class="favorite-component"
+                @toggleIsFavorite="() => handleToggleIsFavorite(track)"
+              />
+
               {{ track.name }}
             </div>
             <div class="song-duration">{{ track.duration }}</div>
@@ -35,8 +35,8 @@
 
 <script setup>
 import { defineProps, inject, defineEmits, onMounted, ref } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+
+import FavoriteIconComponent from "./FavoriteIconComponent.vue";
 
 const backendAddress = inject("backendAddress");
 const getStaticUrl = inject("getStaticUrl");
@@ -167,29 +167,8 @@ async function handleToggleIsFavorite(track) {
 
 .has-karaoke-lyrics {
   background-color: #e9f5db; /* A light green background for karaoke tracks */
-  border-left: 4px solid #4caf50; /* A green border on the left for emphasis */
+  border-left: 4px solid #2196f3; /* A green border on the left for emphasis */
   padding-left: 26px; /* Adjust padding to accommodate the border */
-}
-
-.song-info:hover .favorite-button,
-.favorite-button.is-favorite {
-  opacity: 1;
-}
-
-.favorite-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  padding: 0 15px 0 15px; /* Adds padding to the left and right */
-  display: inline-flex; /* Helps maintain alignment with the icon */
-  align-items: center; /* Centers the icon vertically */
-  justify-content: center; /* Centers the icon horizontally */
-}
-
-.favorite-icon {
-  color: #db4c4c;
 }
 
 audio {
@@ -213,15 +192,7 @@ audio {
 .delete-album-button:hover {
   background-color: darkred;
 }
-
-.song-title,
-.favorite-button,
-.favorite-icon {
-  height: 20px; /* Adjust as needed */
-  line-height: 20px; /* Adjust to match the height for vertical centering */
-  margin-top: -0.15em;
-}
-.favorite-icon {
-  align-self: center; /* Ensures the icon itself is centered within the flex container */
+.favorite-component {
+  margin-top: -0.2em;
 }
 </style>

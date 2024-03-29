@@ -116,6 +116,8 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 - [All the "TODO"s in the code]
 - Autoplay for karaoke mode (reuse AudioComponent?)
 - Show tracks collection with filters
+- Replace Font Awesome Icons with smth less bloated
+- Extract TrackLine component to reuse in collection
 - Add paging for albums & tracks
 - Download tracks' studio versions (ignore clip versions from YT Music)
 - Collection management: order of albums / stars / rating

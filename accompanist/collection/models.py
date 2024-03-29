@@ -73,6 +73,7 @@ class Track(Base):
             "number_in_album": self.number_in_album,
             "duration": self.duration,
             "is_favorite": self.is_favorite,
+            "has_lyrics_karaoke": bool(self.lyrics_karaoke),
         }
 
 
