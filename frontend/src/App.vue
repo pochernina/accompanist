@@ -1,38 +1,30 @@
 <template>
   <div id="app">
-    <HeaderComponent @goToAlbumChoosing="handleGoToAlbumChoosing" @refreshAlbums="fetchAlbums" />
-    <div v-if="albumsAreLoading" class="spinner-container">
-      <SpinnerComponent size="70px" />
-    </div>
-    <div v-else>
-      <AddAlbumComponent
-        v-if="appState === AppStates.UploadingNewAlbum"
-        @confirmUploadNewAlbum="handleConfirmUploadNewAlbum"
-        @goToAlbumChoosing="handleGoToAlbumChoosing"
-      />
-      <AlbumComponent
-        v-if="appState === AppStates.ChoosingTrack"
-        :album="selectedAlbum"
-        @goToAlbumChoosing="handleGoToAlbumChoosing"
-        @selectTrack="handleSelectTrack"
-        @deleteAlbum="handleDeleteAlbum"
-        @refreshAlbums="fetchAlbums"
-      />
-      <AlbumListComponent
-        :albums="albums"
-        @selectAlbum="handleSelectAlbum"
-        v-if="appState === AppStates.ChoosingAlbum"
-        @uploadNewAlbum="handleUploadNewAlbum"
-      />
-      <TrackComponent
-        :track="selectedTrack"
-        :album="selectedAlbum"
-        @goToTrackChoosing="handleGoToTrackChoosing"
-        @goToTrackByNumberInAlbum="handleGoToTrackByNumberInAlbum"
-        @refreshAlbums="fetchAlbums"
-        v-if="appState === AppStates.ListeningToTrack"
-      />
-    </div>
+    <HeaderComponent @goToAlbumChoosing="handleGoToAlbumChoosing" />
+    <AddAlbumComponent
+      v-if="appState === AppStates.UploadingNewAlbum"
+      @confirmUploadNewAlbum="handleConfirmUploadNewAlbum"
+      @goToAlbumChoosing="handleGoToAlbumChoosing"
+    />
+    <AlbumListComponent
+      v-if="appState === AppStates.ChoosingAlbum"
+      @selectAlbum="handleSelectAlbum"
+      @uploadNewAlbum="handleUploadNewAlbum"
+    />
+    <AlbumComponent
+      v-if="appState === AppStates.ChoosingTrack"
+      :selectedAlbumId="selectedAlbumId"
+      @goToAlbumChoosing="handleGoToAlbumChoosing"
+      @selectTrack="handleSelectTrack"
+      @deleteAlbum="handleDeleteAlbum"
+    />
+    <TrackComponent
+      v-if="appState === AppStates.ListeningToTrack"
+      :selectedAlbumId="selectedAlbumId"
+      :selectedTrackId="selectedTrackId"
+      @goToTrackChoosing="handleGoToTrackChoosing"
+      @goToTrackById="handleGoToTrackById"
+    />
   </div>
 </template>
 
@@ -63,19 +55,7 @@ const userSettings = reactive({
 provide("getStaticUrl", getStaticUrl);
 provide("userSettings", userSettings);
 
-const albums = ref([]);
-const albumsAreLoading = ref(true);
-
 const appState = ref(1);
-
-const selectedAlbumId = ref(null);
-const selectedTrackId = ref(null);
-const selectedAlbum = computed(() =>
-  albums.value.find((album) => album.id === selectedAlbumId.value)
-);
-const selectedTrack = computed(() =>
-  selectedAlbum.value.tracks.find((track) => track.id === selectedTrackId.value)
-);
 
 const AppStates = {
   UploadingNewAlbum: 0,
@@ -83,6 +63,9 @@ const AppStates = {
   ChoosingTrack: 2,
   ListeningToTrack: 3,
 };
+
+const selectedAlbumId = ref(null);
+const selectedTrackId = ref(null);
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -120,35 +103,14 @@ function handleConfirmUploadNewAlbum() {
   scrollToTop();
 }
 
-function handleGoToTrackByNumberInAlbum(newNumberInAlbum) {
-  let track = selectedAlbum.value.tracks.find(
-    (track) => track.number_in_album === newNumberInAlbum
-  );
-  selectedTrackId.value = track.id;
+function handleGoToTrackById(newTrackId) {
+  selectedTrackId.value = newTrackId;
   scrollToTop();
 }
 
 const handleDeleteAlbum = async () => {
   handleGoToAlbumChoosing();
-  await fetchAlbums();
 };
-
-const fetchAlbums = async () => {
-  albumsAreLoading.value = true;
-  try {
-    const response = await fetch(`${backendAddress}/collection/albums`);
-    if (!response.ok) throw new Error("Failed to fetch");
-    albums.value = await response.json();
-  } catch (error) {
-    console.error("Error fetching albums:", error);
-  } finally {
-    albumsAreLoading.value = false;
-  }
-};
-
-onMounted(() => {
-  fetchAlbums();
-});
 </script>
 
 <style>

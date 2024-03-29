@@ -8,7 +8,7 @@
     />
     <h1 class="clickable" @click="$emit('goToAlbumChoosing')">Accompanist</h1>
     <div class="refresh-button" @click="$emit('refreshAlbums')">
-      <FontAwesomeIcon class="icon-sized" :icon="faArrowsRotate" fixed-width />
+      <!-- <FontAwesomeIcon class="icon-sized" :icon="faArrowsRotate" fixed-width /> -->
     </div>
     <SettingsModalComponent v-if="isModalVisible" @closeModal="toggleModal" />
     <div class="settings-button" @click="toggleModal">

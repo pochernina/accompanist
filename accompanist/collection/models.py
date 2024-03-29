@@ -66,6 +66,15 @@ class Track(Base):
             "is_favorite": self.is_favorite,
         }
 
+    def to_json_for_album(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "number_in_album": self.number_in_album,
+            "duration": self.duration,
+            "is_favorite": self.is_favorite,
+        }
+
 
 class Album(Base):
     __tablename__ = "album"
@@ -83,14 +92,22 @@ class Album(Base):
     def __repr__(self):
         return f'Album "{self.name}" by "{self.artist.name}"'
 
-    def to_json(self):
+    def to_json_with_tracks(self):
         return {
             "id": self.id,
             "name": self.name,
             "artist": self.artist.to_json(),
             "cover_path": self.cover_path,
             "tracks": sorted(
-                (track.to_json() for track in self.tracks),
+                (track.to_json_for_album() for track in self.tracks),
                 key=lambda track: track["number_in_album"],
             ),
+        }
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "artist": self.artist.to_json(),
+            "cover_path": self.cover_path,
         }

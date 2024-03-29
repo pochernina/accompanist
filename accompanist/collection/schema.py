@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -5,9 +7,7 @@ class AlbumInfoFromUser(BaseModel):
     search_query: str
 
 
-class LyricsKaraokeFromUser(BaseModel):
-    lyrics_karaoke: list[dict]
-
-
-class IsFavoriteFromUser(BaseModel):
-    is_favorite: bool
+class TrackUpdateRequest(BaseModel):
+    is_favorite: Optional[bool] = None
+    lyrics: Optional[str] = None
+    lyrics_karaoke: Optional[list[dict]] = None

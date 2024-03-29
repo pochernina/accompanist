@@ -114,9 +114,8 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 #### Possible todos
 
 - [All the "TODO"s in the code]
-- Refactor endpoints
+- Autoplay for karaoke mode (reuse AudioComponent?)
 - Download tracks' studio versions (ignore clip versions from YT Music)
-- Showing lyrics (as in karaoke): API vs self-labeling
 - Collection management: order of albums / stars / rating
 - Add editing text from frontend (to edit Genius parser's mistakes)
 - Run `alembic upgrade head` at launching?

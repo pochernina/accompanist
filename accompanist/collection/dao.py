@@ -16,55 +16,45 @@ class AlbumDAO(BaseDAO):
     model = Album
 
     @classmethod
-    async def get_all_with_tracks_and_artists(cls) -> list[dict]:
+    async def get_all(cls) -> list[dict]:
         async with async_session_maker() as session:
-            query = select(cls.model).options(
-                selectinload(Album.tracks), selectinload(Album.artist)
-            )
+            query = select(cls.model).options(selectinload(Album.artist))
             result = await session.execute(query)
-            # TODO: think about using `mappings()`
             albums = result.scalars().all()
         return [album.to_json() for album in albums]
+
+    @classmethod
+    async def get_by_id_with_tracks_info(cls, id_: int) -> list[dict]:
+        async with async_session_maker() as session:
+            query = (
+                select(cls.model)
+                .filter_by(id=id_)
+                .options(selectinload(Album.tracks), selectinload(Album.artist))
+            )
+            result = await session.execute(query)
+            album = result.scalars().one_or_none()
+        return album.to_json_with_tracks()
 
 
 class TrackDAO(BaseDAO):
     model = Track
 
     @classmethod
-    async def get_for_update_with_artist(cls, id: int) -> Optional[Track]:
+    async def get_with_artist(cls, id_: int) -> Optional[Track]:
         async with async_session_maker() as session:
-            query = (
-                select(Track)
-                .filter_by(id=id)
-                .options(selectinload(Track.artist))
-                .with_for_update()
-            )
+            query = select(Track).filter_by(id=id_).options(selectinload(Track.artist))
             result = await session.execute(query)
             return result.scalars().one_or_none()
 
     @classmethod
-    async def update_lyrics(cls, track: Track, lyrics: str):
-        async with async_session_maker() as session:
-            track.lyrics = lyrics
-            session.add(track)
-            await session.commit()
-
-    @classmethod
-    async def update_lyrics_karaoke_by_id(
-        cls, track_id: int, lyrics_karaoke: list[dict]
-    ):
+    async def update(cls, track_id: int, update_data: dict) -> Optional[Track]:
         async with async_session_maker() as session:
             query = select(Track).filter_by(id=track_id).with_for_update()
             result = await session.execute(query)
-            track = result.scalars().one_or_none()
-            track.lyrics_karaoke = lyrics_karaoke
-            await session.commit()
+            track = result.scalars().one()
 
-    @classmethod
-    async def update_favorite_by_id(cls, track_id: int, is_favorite: bool):
-        async with async_session_maker() as session:
-            query = select(Track).filter_by(id=track_id).with_for_update()
-            result = await session.execute(query)
-            track = result.scalars().one_or_none()
-            track.is_favorite = is_favorite
+            for field, value in update_data.items():
+                setattr(track, field, value)
+
             await session.commit()
+            return track.to_json()

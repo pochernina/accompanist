@@ -5,16 +5,12 @@
     </div>
     <div class="form-container">
       <h1>Добавить альбом</h1>
-      <input
-        v-model="searchQuery"
-        placeholder="Исполнитель и название"
-        type="text"
-      />
+      <input v-model="searchQuery" placeholder="Исполнитель и название" type="text" />
       <div class="checkbox-container">
         <input type="checkbox" id="addMultipleFlag" v-model="addMultipleFlag" />
         <label for="addMultipleFlag">Добавить несколько</label>
       </div>
-      <button @click="addSong">Добавить</button>
+      <button @click="addAlbum">Добавить</button>
     </div>
   </div>
 </template>
@@ -28,7 +24,7 @@ const addMultipleFlag = ref(false);
 
 const emit = defineEmits(["confirmUploadNewAlbum", "goToAlbumChoosing"]);
 
-async function addSong() {
+async function addAlbum() {
   try {
     const response = await fetch(`${backendAddress}/collection/album`, {
       method: "POST",

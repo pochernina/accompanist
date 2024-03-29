@@ -1,5 +1,5 @@
 <template>
-  <div class="album-details">
+  <div class="album-details" v-if="album">
     <div @click="$emit('goToAlbumChoosing')" class="go-back-button clickable">
       ← <slot>Назад</slot>
     </div>
@@ -34,22 +34,39 @@
 </template>
 
 <script setup>
-import { defineProps, inject, defineEmits } from "vue";
+import { defineProps, inject, defineEmits, onMounted, ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const backendAddress = inject("backendAddress");
+const getStaticUrl = inject("getStaticUrl");
 
 const props = defineProps({
-  album: Object,
+  selectedAlbumId: Number,
 });
 
-const emit = defineEmits(["selectTrack", "goToAlbumChoosing", "deleteAlbum", "refreshAlbums"]);
+const album = ref(null);
+
+const emit = defineEmits(["selectTrack", "goToAlbumChoosing", "deleteAlbum"]);
+
+const fetchAlbum = async () => {
+  try {
+    const response = await fetch(`${backendAddress}/album/${props.selectedAlbumId}`);
+    if (!response.ok) throw new Error("Failed to fetch");
+    album.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching album:", error);
+  }
+};
+
+onMounted(async () => {
+  await fetchAlbum();
+});
 
 const deleteAlbum = async () => {
   if (window.confirm("Вы уверены, что хотите удалить этот альбом?")) {
     try {
-      const response = await fetch(`${backendAddress}/collection/album/${props.album.id}`, {
+      const response = await fetch(`${backendAddress}/album/${album.value.id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -66,8 +83,8 @@ const deleteAlbum = async () => {
 
 async function handleToggleIsFavorite(track) {
   try {
-    const response = await fetch(`${backendAddress}/collection/update_favorite/${track.id}`, {
-      method: "POST",
+    const response = await fetch(`${backendAddress}/track/${track.id}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -75,7 +92,7 @@ async function handleToggleIsFavorite(track) {
         is_favorite: !track.is_favorite,
       }),
     });
-    emit("refreshAlbums");
+    await fetchAlbum();
     if (!response.ok) {
       throw new Error("Failed to update is_favorite");
     }
@@ -84,10 +101,6 @@ async function handleToggleIsFavorite(track) {
     alert("Failed to update is_favorite");
   }
 }
-
-const getStaticUrl = (filename) => {
-  return `${backendAddress}/static/${filename}`;
-};
 </script>
 
 <style scoped>

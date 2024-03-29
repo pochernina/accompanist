@@ -5,12 +5,12 @@
       <div class="albums-grid">
         <div
           class="album"
-          v-for="album in props.albums"
+          v-for="album in albums"
           :key="album.id"
           @click="$emit('selectAlbum', album.id)"
         >
           <img
-            :src="getImageUrl(album.cover_path)"
+            :src="getStaticUrl(album.cover_path)"
             alt="Обложка альбома"
             class="album-cover clickable"
           />
@@ -29,16 +29,25 @@
 import { ref, onMounted, inject, defineEmits, defineProps } from "vue";
 
 const backendAddress = inject("backendAddress");
+const getStaticUrl = inject("getStaticUrl");
 
-const props = defineProps({
-  albums: Array[Object],
-});
+const albums = ref([]);
 
 const emit = defineEmits(["selectAlbum", "uploadNewAlbum"]);
 
-const getImageUrl = (image_name) => {
-  return `${backendAddress}/static/${image_name}`;
+const fetchAlbums = async () => {
+  try {
+    const response = await fetch(`${backendAddress}/albums`);
+    if (!response.ok) throw new Error("Failed to fetch");
+    albums.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching albums:", error);
+  }
 };
+
+onMounted(async () => {
+  await fetchAlbums();
+});
 </script>
 
 <style scoped>
