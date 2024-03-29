@@ -114,7 +114,7 @@ async function handleToggleIsFavorite(track) {
 
 .album-details {
   max-width: 800px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

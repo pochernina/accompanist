@@ -30,24 +30,34 @@
         </div>
 
         <div v-if="switchIsInKaraokeMode">
-          <div v-if="karaokeModeIsAvaiable">
-            <KaraokeLyricsComponent :track="track" />
-          </div>
-          <div v-else>
-            Для этого трека ещё не записана информация о таймингах.
-
-            <!-- <button
-              @click="
-                ...
-              "
-            >
-              Записать
-            </button> -->
+          <button
+            v-if="isKaraokeInRecordingMode"
+            @click="toggleKaraokeRecordingMode"
+            class="karaoke-toggle"
+          >
+            Назад
+          </button>
+          <button
+            v-if="!karaokeModeIsAvaiable && !isKaraokeInRecordingMode"
+            @click="toggleKaraokeRecordingMode"
+            class="karaoke-toggle"
+          >
+            Разметить караоке-текст
+          </button>
+          <div v-if="isKaraokeInRecordingMode">
             <RecordTimecodesComponent
               :mp3Url="getStaticUrl(track.filename_original)"
               :lyricsText="track.lyrics"
               @sendRecordedKaraokeLyrics="handleUpdatedLyricsKaraoke"
             />
+          </div>
+          <div v-else>
+            <div v-if="karaokeModeIsAvaiable">
+              <KaraokeLyricsComponent :track="track" />
+              <button @click="toggleKaraokeRecordingMode" class="karaoke-toggle">
+                Переразметить караоке-текст
+              </button>
+            </div>
           </div>
         </div>
         <div class="multiline-text" v-else>
@@ -116,9 +126,15 @@ const karaokeModeIsAvaiable = computed(() => {
   return track.value?.lyrics_karaoke;
 });
 
+const isKaraokeInRecordingMode = ref(false);
+
 const isFirstTrack = computed(() => track.value.number_in_album == 1);
 const isLastTrack = computed(() => track.value.number_in_album == album.value.tracks.length);
 const isSingle = computed(() => album.value.tracks.length == 1);
+
+function toggleKaraokeRecordingMode() {
+  isKaraokeInRecordingMode.value = !isKaraokeInRecordingMode.value;
+}
 
 function handleToggleLyricsMode() {
   if (pageState.value === TrackPageStates.ShowPlainLyrics) {
@@ -187,6 +203,7 @@ function goToPreviousTrack() {
 function chooseDefaultLyricsPage() {
   if (karaokeModeIsAvaiable.value) {
     pageState.value = TrackPageStates.ShowKaraokeLyrics;
+    isKaraokeInRecordingMode.value = false;
   } else {
     pageState.value = TrackPageStates.ShowPlainLyrics;
   }
@@ -240,7 +257,7 @@ watch(
 
 .track-details {
   max-width: 800px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -366,5 +383,24 @@ watch(
 
 .marged-spinner {
   margin-top: 50px;
+}
+.karaoke-toggle {
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+}
+
+.karaoke-toggle:hover {
+  background-color: #e2e6ea;
+}
+
+.karaoke-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.5);
 }
 </style>

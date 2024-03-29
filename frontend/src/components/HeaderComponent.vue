@@ -38,9 +38,8 @@ function toggleModal() {
 .header {
   display: flex;
   align-items: center;
-  padding: 30px 0 0 50px;
   flex-wrap: wrap; /* Allows items to wrap to the next line on small screens */
-  padding: 20px; /* Adjusted padding for responsiveness */
+  padding: 5px 20px 0 5px;
   gap: 20px; /* Adds space between flex items */
   justify-content: space-between; /* Spreads out the items on larger screens */
 }
