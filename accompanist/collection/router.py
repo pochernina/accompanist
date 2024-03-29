@@ -50,7 +50,8 @@ async def update_track(track_id: int, update_request: TrackUpdateRequest):
 
 @router.post("/tracks/{track_id}/lyrics")
 async def update_track_lyrics(track_id: int):
-    await service.update_track_lyrics_by_id(track_id)
+    track = await service.update_track_lyrics_by_id(track_id)
+    return track
 
 
 @router.post("/update_lyrics_dev", include_in_schema=False)

@@ -47,7 +47,7 @@ class TrackDAO(BaseDAO):
             return result.scalars().one_or_none()
 
     @classmethod
-    async def update(cls, track_id: int, update_data: dict) -> Optional[Track]:
+    async def update(cls, track_id: int, update_data: dict):
         async with async_session_maker() as session:
             query = select(Track).filter_by(id=track_id).with_for_update()
             result = await session.execute(query)

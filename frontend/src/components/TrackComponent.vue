@@ -6,7 +6,7 @@
     <h2>{{ track.name }} by {{ album.artist.name }}</h2>
     <img :src="getStaticUrl(album.cover_path)" alt="Обложка альбома" class="album-cover" />
     <div class="songs-list">
-      <div v-if="pageState === TrackPageStates.ShowSpinnerInsteadOfLyrics">
+      <div v-if="pageState === TrackPageStates.ShowSpinnerInsteadOfLyrics" class="marged-spinner">
         <SpinnerComponent size="70px" />
       </div>
       <div v-else>
@@ -143,7 +143,7 @@ async function handleUpdatedLyricsKaraoke(lyrics_karaoke) {
     if (!response.ok) {
       throw new Error("Failed to update karaoke lyrics");
     }
-    await fetchTrack();
+    track.value = await response.json();
     chooseDefaultLyricsPage();
   } catch (error) {
     console.error(error);
@@ -163,7 +163,7 @@ async function updateLyrics() {
     if (!response.ok) {
       throw new Error("Failed to update lyrics");
     }
-    await fetchTrack();
+    track.value = await response.json();
   } catch (error) {
     console.error(error);
     alert("Failed to update lyrics");
@@ -362,5 +362,9 @@ watch(
 
 .switch-label-text {
   margin: 0 auto;
+}
+
+.marged-spinner {
+  margin-top: 50px;
 }
 </style>

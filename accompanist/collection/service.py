@@ -17,4 +17,5 @@ async def update_track_lyrics_by_id(track_id: int):
         None, get_lyrics_from_genius, track.artist.name, track.name
     )
     update_request = TrackUpdateRequest(lyrics=lyrics).model_dump(exclude_unset=True)
-    await TrackDAO.update(track.id, update_request)
+    track = await TrackDAO.update(track.id, update_request)
+    return track
