@@ -41,6 +41,19 @@ services:
               count: 1
               capabilities: [ gpu ]
 
+  celery-flower:
+    network_mode: host
+    restart: always
+    build: .
+    env_file: .env
+    depends_on:
+      - celery-worker
+    command:
+      celery -A accompanist.celery.main.app flower
+    environment:
+      - STORAGE_PATH=/storage
+      # Allow controlling tasks with Flower without authentication
+      - FLOWER_UNAUTHENTICATED_API=true
 
   frontend:
     restart: always

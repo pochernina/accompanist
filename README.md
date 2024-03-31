@@ -72,6 +72,9 @@ containers to be running:
 docker compose up -d nginx db rabbitmq
 ```
 
+You can view the current Celery tasks queue using Flower on
+http://localhost:5555.
+
 ### Running frontend locally
 
 ```
@@ -115,6 +118,8 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 
 - [All the "TODO"s in the code]
 - Autoplay for karaoke mode (reuse AudioComponent?)
+- Tune Genius search query (e.g. remove the parentheses in track title)
+- Skip banned tracks from album
 - Show tracks collection with filters
 - Replace Font Awesome Icons with smth less bloated
 - Extract TrackLine component to reuse in collection

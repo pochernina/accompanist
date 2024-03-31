@@ -19,6 +19,7 @@ ytmusicapi = "*" # updates are very important for this package
 yt-dlp = "*" # updates are very important for this package
 demucs = "^4.0.1"
 lyricsgenius = "^3.0.1"
+flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.2"
