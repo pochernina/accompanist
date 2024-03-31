@@ -1,0 +1,23 @@
+on:
+  push
+name: pytest
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up .env
+      run: cp .env.sample .env
+
+    - name: Build and run containers
+      run: DOCKER_BUILDKIT=1 docker-compose up -d backend
+
+    - name: Check running containers
+      run: docker-compose ps -a
+
+    - name: Test with pytest
+      run: docker-compose exec -T backend pytest 2>&1 > pytest_log.txt
+
+    - name: Show pytest output
+      run: cat pytest_log.txt
