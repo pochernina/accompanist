@@ -50,7 +50,7 @@ class Track(Base):
     artist: Mapped["Artist"] = relationship(back_populates="tracks")
 
     def __repr__(self):
-        return f'track "{self.name}" by "{self.artist.name}"'
+        return f'track "{self.name}"'
 
     def to_json(self):
         return {
@@ -91,7 +91,7 @@ class Album(Base):
     tracks: Mapped[list["Track"]] = relationship(back_populates="album")
 
     def __repr__(self):
-        return f'Album "{self.name}" by "{self.artist.name}"'
+        return f'Album "{self.name}"'
 
     def to_json_with_tracks(self):
         return {

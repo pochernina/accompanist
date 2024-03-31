@@ -75,6 +75,8 @@ docker compose up -d nginx db rabbitmq
 You can view the current Celery tasks queue using Flower on
 http://localhost:5555.
 
+You can access the admin panel at http://localhost:8000/admin.
+
 ### Running frontend locally
 
 ```
@@ -118,7 +120,9 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 
 - [All the "TODO"s in the code]
 - Autoplay for karaoke mode (reuse AudioComponent?)
+- Fix admin panel being available only at ${FASTAPI_PORT} but not at ${NGINX_PORT}
 - Tune Genius search query (e.g. remove the parentheses in track title)
+- Add authentication with JWT for admin panel
 - Skip banned tracks from album
 - Show tracks collection with filters
 - Replace Font Awesome Icons with smth less bloated
