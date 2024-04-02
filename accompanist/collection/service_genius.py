@@ -21,6 +21,7 @@ def get_lyrics_from_genius(artist_name: str, song_name: str) -> str:
                 get_full_info=False,
             )
     lyrics = song.lyrics
+    genius_url = song.url
 
     # `lyricsgenius` parser makes some mistakes => fix them (maybe one day it
     #  will be fixed)
@@ -42,4 +43,4 @@ def get_lyrics_from_genius(artist_name: str, song_name: str) -> str:
     if n_digits:
         lyrics = lyrics[:-n_digits]
 
-    return lyrics
+    return lyrics, genius_url

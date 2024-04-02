@@ -71,7 +71,7 @@ def process_album(search_query: str):
         track_name = track["title"]
         lyrics = None
         try:
-            lyrics = get_lyrics_from_genius(artist.name, track_name)
+            lyrics, genius_url = get_lyrics_from_genius(artist.name, track_name)
         except Exception:
             logger.exception(f"Couldn't get lyrics for {track_name}, continuing..")
         coroutine = TrackDAO.add(
@@ -86,6 +86,7 @@ def process_album(search_query: str):
             number_in_album=i,
             duration=track["duration"],
             lyrics=lyrics,
+            genius_url=genius_url,
         )
         track = run_async(coroutine)
         logger.info(f"Added {track}")

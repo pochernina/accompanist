@@ -19,8 +19,13 @@
               :isFavorite="track.is_favorite"
               class="favorite-component"
               @toggleIsFavorite="handleToggleIsFavorite"
+              title="Мне нравится"
             />
-            <div class="karaoke-button" @click="handleToggleLyricsMode">
+            <div
+              class="karaoke-button"
+              @click="handleToggleLyricsMode"
+              title="Полный текст или кароке-режим"
+            >
               <FontAwesomeIcon
                 v-if="switchIsInKaraokeMode"
                 class="icon-sized-karaoke"
@@ -35,9 +40,22 @@
               />
             </div>
             <div
+              v-if="track.genius_url"
+              class="next-prev-button"
+              @click="openLinkInNewTab(track.genius_url)"
+            >
+              <FontAwesomeIcon
+                class="icon-sized"
+                :icon="faPenFancy"
+                title="Открыть текст на Genius.com"
+                fixed-width
+              />
+            </div>
+            <div
               v-if="!isFirstTrack"
               class="next-prev-button"
               @click="goToPreviousTrack"
+              title="Предыдущий трек в альбоме"
             >
               <FontAwesomeIcon
                 class="icon-sized"
@@ -49,6 +67,7 @@
               v-if="!isLastTrack"
               class="next-prev-button"
               @click="goToNextTrack"
+              title="Следующий трек в альбоме"
             >
               <FontAwesomeIcon
                 :icon="faForwardStep"
@@ -89,7 +108,12 @@
           </div>
           <div v-else>
             <div v-if="karaokeModeIsAvaiable">
-              <KaraokeLyricsComponent :track="track" />
+              <KaraokeLyricsComponent
+                :track="track"
+                @goToNextTrack="handleGoToNextTrackFromAutoContinue"
+                :autoplay="userSettings.isAutoplayEnabled"
+                :autocontinue="userSettings.isAutoplayEnabled"
+              />
               <button
                 @click="toggleKaraokeRecordingMode"
                 class="karaoke-toggle"
@@ -107,13 +131,7 @@
             :src="getStaticUrl(track.filename_instrumental)"
             :autoplay="userSettings.isAutoplayEnabled"
             :autocontinue="userSettings.isAutoplayEnabled"
-            @finishAudio="
-              () => {
-                if (!isLastTrack) {
-                  goToNextTrack();
-                }
-              }
-            "
+            @goToNextTrack="handleGoToNextTrackFromAutoContinue"
           />
           <AudioComponent
             :src="getStaticUrl(track.filename_vocals)"
@@ -151,6 +169,7 @@ import {
   faForwardStep,
   faBackwardStep,
   faMicrophoneLines,
+  faPenFancy,
 } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 
@@ -299,6 +318,17 @@ function chooseDefaultLyricsPage() {
     pageState.value = TrackPageStates.ShowPlainLyrics;
   }
 }
+
+function handleGoToNextTrackFromAutoContinue() {
+  if (!isLastTrack.value) {
+    goToNextTrack();
+  }
+}
+
+function openLinkInNewTab(url) {
+  window.open(url, "_blank");
+}
+
 const fetchAlbum = async () => {
   try {
     const response = await fetch(
@@ -442,18 +472,20 @@ watch(
 
 .karaoke-button {
   cursor: pointer;
-  display: flex;
+  /* display: flex;
   width: 24px;
   height: 24px;
   align-items: center;
-  justify-content: center; /* Centers the icon horizontally */
-  border-radius: 50%; /* Creates the circle shape */
-  background-color: black; /* Blue background color */
+  justify-content: center;
+  border-radius: 50%;
+  background-color: black; */
 }
 
 .icon-sized-karaoke {
-  width: 11px;
-  height: 11px;
-  color: white;
+  /* width: 11px;
+  height: 11px; */
+  /* color: white; */
+  width: 24px;
+  height: 24px;
 }
 </style>

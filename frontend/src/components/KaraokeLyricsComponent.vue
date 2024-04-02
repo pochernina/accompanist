@@ -3,6 +3,9 @@
     <AudioComponent
       :timeupdate="updateCurrentLine"
       :src="getStaticUrl(track.filename_instrumental)"
+      @goToNextTrack="$emit('goToNextTrack')"
+      :autoplay="props.autoplay"
+      :autocontinue="props.autocontinue"
     />
     <div class="lyrics">
       <div v-if="currentLineIndex % 2 == 0">
@@ -18,18 +21,26 @@
 </template>
 
 <script setup>
-import { ref, defineProps, inject, computed } from "vue";
+import { ref, defineProps, inject, computed, defineEmits } from "vue";
 import AudioComponent from "./AudioComponent.vue";
+
+const emit = defineEmits(["goToNextTrack"]);
 
 const props = defineProps({
   track: Object,
+  autoplay: Boolean,
+  autocontinue: Boolean,
 });
 
 const currentLineIndex = ref(0);
 const linesNumber = computed(() => props.track.lyrics_karaoke.length);
-const currentLineText = computed(
-  () => props.track.lyrics_karaoke[currentLineIndex.value].line
-);
+const currentLineText = computed(() => {
+  if (currentLineIndex.value >= linesNumber.value) {
+    return "";
+  } else {
+    return props.track.lyrics_karaoke[currentLineIndex.value].line;
+  }
+});
 const nextLineText = computed(() => {
   if (currentLineIndex.value + 1 >= linesNumber.value) {
     return "";
@@ -50,7 +61,7 @@ const updateCurrentLine = (currentTime) => {
     return;
   }
   if (currentTime >= props.track.lyrics_karaoke[high].end_ts) {
-    currentLineIndex.value = high;
+    currentLineIndex.value = high + 1;
     return;
   }
   while (low <= high) {

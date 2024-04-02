@@ -12,7 +12,7 @@
           if (props.autocontinue) {
             // TODO: replace with something better (like `onFinish`)
             if (audioRef.duration - audioRef.currentTime < 0.5) {
-              $emit('finishAudio');
+              $emit('goToNextTrack');
             }
           }
         }
@@ -29,7 +29,7 @@ const props = defineProps({
   autocontinue: Boolean,
   timeupdate: { type: Function, required: false, default: () => {} },
 });
-const emit = defineEmits(["finishAudio"]);
+const emit = defineEmits(["goToNextTrack"]);
 
 const audioRef = ref(null);
 
