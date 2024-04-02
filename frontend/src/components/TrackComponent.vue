@@ -3,39 +3,67 @@
     <div @click="$emit('goToTrackChoosing')" class="go-back-button clickable">
       ← <slot>Назад</slot>
     </div>
-    <h2>
-      <FavoriteIconComponent
-        :trackId="track.id"
-        :isFavorite="track.is_favorite"
-        class="favorite-component"
-        @toggleIsFavorite="handleToggleIsFavorite"
-      />
-      {{ track.name }} by {{ album.artist.name }}
-    </h2>
-    <img :src="getStaticUrl(album.cover_path)" alt="Обложка альбома" class="album-cover" />
     <div class="songs-list">
-      <div v-if="pageState === TrackPageStates.ShowSpinnerInsteadOfLyrics" class="marged-spinner">
+      <div
+        v-if="pageState === TrackPageStates.ShowSpinnerInsteadOfLyrics"
+        class="marged-spinner"
+      >
         <SpinnerComponent size="70px" />
       </div>
       <div v-else>
-        <div class="switch-outer-container">
-          <div class="switch-container">
-            <input
-              id="karaoke-switch"
-              type="checkbox"
-              v-model="switchIsInKaraokeMode"
-              @change="handleToggleLyricsMode"
+        <div class="title-and-icons">
+          <h2>{{ album.artist.name }} — {{ track.name }}</h2>
+          <div class="all-action-icons">
+            <FavoriteIconComponent
+              :trackId="track.id"
+              :isFavorite="track.is_favorite"
+              class="favorite-component"
+              @toggleIsFavorite="handleToggleIsFavorite"
             />
-            <label for="karaoke-switch" class="switch-label">
-              <span class="switch-label-text" v-if="switchIsInKaraokeMode">Режим караоке</span>
-              <span class="switch-label-text" v-else>Полный текст</span>
-            </label>
+            <div class="karaoke-button" @click="handleToggleLyricsMode">
+              <FontAwesomeIcon
+                v-if="switchIsInKaraokeMode"
+                class="icon-sized-karaoke"
+                :icon="faMicrophoneLines"
+                fixed-width
+              />
+              <FontAwesomeIcon
+                v-else
+                class="icon-sized-karaoke"
+                :icon="faFileLines"
+                fixed-width
+              />
+            </div>
+            <div
+              v-if="!isFirstTrack"
+              class="next-prev-button"
+              @click="goToPreviousTrack"
+            >
+              <FontAwesomeIcon
+                class="icon-sized"
+                :icon="faBackwardStep"
+                fixed-width
+              />
+            </div>
+            <div
+              v-if="!isLastTrack"
+              class="next-prev-button"
+              @click="goToNextTrack"
+            >
+              <FontAwesomeIcon
+                :icon="faForwardStep"
+                class="icon-sized"
+                fixed-width
+              />
+            </div>
           </div>
         </div>
-        <div class="navigation-buttons" v-if="!isSingle">
-          <button v-if="!isFirstTrack" @click="goToPreviousTrack">Предыдущий трек</button>
-          <button v-if="!isLastTrack" @click="goToNextTrack">Следующий трек</button>
-        </div>
+
+        <img
+          :src="getStaticUrl(album.cover_path)"
+          alt="Обложка альбома"
+          class="album-cover"
+        />
 
         <div v-if="switchIsInKaraokeMode">
           <button
@@ -62,7 +90,10 @@
           <div v-else>
             <div v-if="karaokeModeIsAvaiable">
               <KaraokeLyricsComponent :track="track" />
-              <button @click="toggleKaraokeRecordingMode" class="karaoke-toggle">
+              <button
+                @click="toggleKaraokeRecordingMode"
+                class="karaoke-toggle"
+              >
                 Переразметить караоке-текст
               </button>
               <button @click="removeLyricsKaraoke" class="karaoke-toggle">
@@ -84,15 +115,23 @@
               }
             "
           />
-          <AudioComponent :src="getStaticUrl(track.filename_vocals)" :autoplay="false" />
-          <AudioComponent :src="getStaticUrl(track.filename_original)" :autoplay="false" />
+          <AudioComponent
+            :src="getStaticUrl(track.filename_vocals)"
+            :autoplay="false"
+          />
+          <AudioComponent
+            :src="getStaticUrl(track.filename_original)"
+            :autoplay="false"
+          />
 
           {{ track.lyrics }}
           <div class="updateLyricsButtonDiv">
             <div v-if="updateLyricsButtonIsLoading">
               <SpinnerComponent size="20px" />
             </div>
-            <button v-else @click="updateLyrics" class="updateLyricsButton">Обновить текст</button>
+            <button v-else @click="updateLyrics" class="updateLyricsButton">
+              Обновить текст
+            </button>
           </div>
         </div>
       </div>
@@ -106,6 +145,14 @@ import KaraokeLyricsComponent from "./KaraokeLyricsComponent.vue";
 import RecordTimecodesComponent from "./RecordTimecodesComponent.vue";
 import AudioComponent from "./AudioComponent.vue";
 import FavoriteIconComponent from "./FavoriteIconComponent.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+import {
+  faForwardStep,
+  faBackwardStep,
+  faMicrophoneLines,
+} from "@fortawesome/free-solid-svg-icons";
+import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 
 const backendAddress = inject("backendAddress");
 const getStaticUrl = inject("getStaticUrl");
@@ -141,7 +188,9 @@ const karaokeModeIsAvaiable = computed(() => {
 const isKaraokeInRecordingMode = ref(false);
 
 const isFirstTrack = computed(() => track.value.number_in_album == 1);
-const isLastTrack = computed(() => track.value.number_in_album == album.value.tracks.length);
+const isLastTrack = computed(
+  () => track.value.number_in_album == album.value.tracks.length
+);
 const isSingle = computed(() => album.value.tracks.length == 1);
 
 function toggleKaraokeRecordingMode() {
@@ -209,12 +258,15 @@ async function handleToggleIsFavorite() {
 async function updateLyrics() {
   try {
     updateLyricsButtonIsLoading.value = true;
-    const response = await fetch(`${backendAddress}/tracks/${track.value.id}/lyrics`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${backendAddress}/tracks/${track.value.id}/lyrics`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to update lyrics");
     }
@@ -249,7 +301,9 @@ function chooseDefaultLyricsPage() {
 }
 const fetchAlbum = async () => {
   try {
-    const response = await fetch(`${backendAddress}/album/${props.selectedAlbumId}`);
+    const response = await fetch(
+      `${backendAddress}/album/${props.selectedAlbumId}`
+    );
     if (!response.ok) throw new Error("Failed to fetch");
     album.value = await response.json();
   } catch (error) {
@@ -259,7 +313,9 @@ const fetchAlbum = async () => {
 
 const fetchTrack = async () => {
   try {
-    const response = await fetch(`${backendAddress}/track/${props.selectedTrackId}`);
+    const response = await fetch(
+      `${backendAddress}/track/${props.selectedTrackId}`
+    );
     if (!response.ok) throw new Error("Failed to fetch");
     track.value = await response.json();
   } catch (error) {
@@ -292,6 +348,8 @@ watch(
   margin-right: auto;
   /* margin-bottom: 40px; */
   max-width: 300px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .track-details {
@@ -310,59 +368,9 @@ watch(
   text-align: center;
 }
 
-.songs-list ul {
-  list-style-type: none;
-  padding: 0;
-  margin-top: 0;
-}
-
-.songs-list li {
-  margin-bottom: 20px;
-  padding: 10px;
-  background-color: #ffffff;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.song-title {
-  font-weight: bold;
-  color: #495057;
-  margin-bottom: 5px;
-}
-
-.song-duration {
-  font-style: italic;
-  color: #6c757d;
-  margin-bottom: 10px;
-}
-
-.song-info {
-  display: flex;
-  align-items: center;
-  /* This will vertically center align the items if they have different heights */
-  justify-content: space-between;
-  /* Adjusts the space between the child elements */
-}
-
 .multiline-text {
   white-space: pre-wrap;
   font-size: 20px;
-}
-
-.navigation-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px; /* Adjust the gap between buttons as needed */
-  margin: 20px 0; /* Adjust spacing as needed */
-}
-
-.navigation-buttons button {
-  cursor: pointer;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  background-color: #f8f9fa;
-  border-radius: 5px;
-  transition: background-color 0.2s;
 }
 
 .updateLyricsButtonDiv {
@@ -376,48 +384,17 @@ watch(
   border-radius: 5px;
   transition: background-color 0.2s;
 }
-.switch-outer-container {
+.title-and-icons {
   display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
-.switch-container {
-  position: relative;
-  display: inline-block;
-  width: 200px;
-  height: 34px;
-}
-
-.switch-label {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.6s;
-  border-radius: 34px;
-  /* padding: 0 10px; */
-  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* This will place the title and icons at the start and end of the container */
   align-items: center;
-  justify-content: space-between;
-  color: white;
-  font-weight: bold;
+  gap: 10px;
 }
 
-#karaoke-switch:checked + .switch-label {
-  background-color: #2196f3;
-}
-
-#karaoke-switch {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.switch-label-text {
-  margin: 0 auto;
+.all-action-icons {
+  display: flex;
+  gap: 10px; /* Расстояние между элементами */
 }
 
 .marged-spinner {
@@ -450,10 +427,33 @@ watch(
   padding: 0 5px;
 }
 
-.track-heading {
-  font-family: "Roboto", sans-serif;
-  font-weight: 700; /* Bold */
-  font-size: 24px; /* This is a common h2 size, adjust as needed */
-  line-height: 1.2; /* Adjust based on your design */
+.next-prev-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.icon-sized {
+  width: 24px;
+  /* Adjust icon size as needed */
+  height: 24px;
+  /* Adjust icon size as needed */
+}
+
+.karaoke-button {
+  cursor: pointer;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center; /* Centers the icon horizontally */
+  border-radius: 50%; /* Creates the circle shape */
+  background-color: black; /* Blue background color */
+}
+
+.icon-sized-karaoke {
+  width: 11px;
+  height: 11px;
+  color: white;
 }
 </style>
