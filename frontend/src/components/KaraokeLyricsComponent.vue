@@ -5,8 +5,14 @@
       :src="getStaticUrl(track.filename_instrumental)"
     />
     <div class="lyrics">
-      <p class="current-line">{{ currentLineText }}</p>
-      <p class="next-line">{{ nextLineText }}</p>
+      <div v-if="currentLineIndex % 2 == 0">
+        <p class="current-line">{{ currentLineText }}</p>
+        <p class="next-line">{{ nextLineText }}</p>
+      </div>
+      <div v-else>
+        <p class="next-line">{{ nextLineText }}</p>
+        <p class="current-line">{{ currentLineText }}</p>
+      </div>
     </div>
   </div>
 </template>
