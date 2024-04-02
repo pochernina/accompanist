@@ -18,7 +18,11 @@ class AlbumDAO(BaseDAO):
     @classmethod
     async def get_all(cls) -> list[dict]:
         async with async_session_maker() as session:
-            query = select(cls.model).options(selectinload(Album.artist))
+            query = (
+                select(Album)
+                .options(selectinload(Album.artist))
+                .order_by(Album.added_at.desc())
+            )
             result = await session.execute(query)
             albums = result.scalars().all()
         return [album.to_json() for album in albums]
