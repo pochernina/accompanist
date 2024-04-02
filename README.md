@@ -120,10 +120,11 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 
 - [All the "TODO"s in the code]
 - Autoplay for karaoke mode (reuse AudioComponent?)
+- DragAndDrop albums at the main page
 - Fix admin panel being available only at ${FASTAPI_PORT} but not at ${NGINX_PORT}
 - Tune Genius search query (e.g. remove the parentheses in track title)
 - Skip banned tracks from album
-- Show tracks collection with filters
+- Show albums/tracks collection with filters
 - Replace Font Awesome Icons with smth less bloated
 - Extract TrackLine component to reuse in collection
 - Hide last line when song ends in karaoke mode
