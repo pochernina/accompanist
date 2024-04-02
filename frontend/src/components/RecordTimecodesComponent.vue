@@ -61,11 +61,19 @@ const recordTimecode = () => {
 };
 
 const recordInterludeEnd = () => {
-  const endTime = audioPlayer.value.currentTime;
-  lyricsWithTimecodes.push({
-    line: "[Проигрыш]",
-    end_ts: endTime - startTime,
-  });
+  let interludeText = "[Проигрыш]";
+  let end_ts = audioPlayer.value.currentTime - startTime;
+  if (
+    lyricsWithTimecodes[lyricsWithTimecodes.length - 1]?.line !== interludeText
+  ) {
+    lyricsWithTimecodes.push({
+      line: interludeText,
+      end_ts: end_ts,
+    });
+  } else {
+    // extend existing interlude
+    lyricsWithTimecodes[lyricsWithTimecodes.length - 1].end_ts = end_ts;
+  }
 };
 </script>
 
