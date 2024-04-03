@@ -125,12 +125,12 @@ the system at `${DEPLOYMENT_HOST}:${DOCKER_FRONTEND_PORT}`.
 - Skip banned tracks from album
 - Show albums/tracks collection with filters
   - Extract TrackLine component to reuse in collection
+  - Sort by cover colors (just for fun)
 - Descriptive error messages on frontend (e.g. for Genius API)
-- Add hint for clicking button on the last syllable when recoring (maybe even
-  color the last syllable of the last word of the line)
 - Add paging for albums & tracks
 - Put vocals track into "practice mode", mix with karaoke?
 - Add router to frontend (to support links like /album/123)
+- Show track name in page title
 - Download tracks' studio versions (ignore clip versions from YT Music)
 - Collection management: order of albums / stars / rating
 - Add editing text from frontend (to edit Genius parser's mistakes)

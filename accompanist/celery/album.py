@@ -70,6 +70,7 @@ def process_album(search_query: str):
         vocals_path, instrumental_path, original_path = process_track(track["videoId"])
         track_name = track["title"]
         lyrics = None
+        genius_url = None
         try:
             lyrics, genius_url = get_lyrics_from_genius(artist.name, track_name)
         except Exception:

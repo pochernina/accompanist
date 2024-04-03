@@ -36,13 +36,9 @@ const lyricsLines = props.lyricsText
   .filter((line) => line.trim() && !line.trim().startsWith("["));
 const lyricsWithTimecodes = reactive([]);
 let currentLineIndex = ref(0);
-let startTime = 0;
 
 const setupPlayer = () => {
   if (audioPlayer.value) {
-    audioPlayer.value.addEventListener("play", () => {
-      startTime = audioPlayer.value.currentTime;
-    });
     audioPlayer.value.play();
   }
 };
@@ -51,7 +47,7 @@ const recordTimecode = () => {
   const endTime = audioPlayer.value.currentTime;
   lyricsWithTimecodes.push({
     line: lyricsLines[currentLineIndex.value],
-    end_ts: endTime - startTime,
+    end_ts: endTime,
   });
   if (currentLineIndex.value == lyricsLines.length - 1) {
     emit("sendRecordedKaraokeLyrics", lyricsWithTimecodes);
@@ -62,7 +58,7 @@ const recordTimecode = () => {
 
 const recordInterludeEnd = () => {
   let interludeText = "[Проигрыш]";
-  let end_ts = audioPlayer.value.currentTime - startTime;
+  let end_ts = audioPlayer.value.currentTime;
   if (
     lyricsWithTimecodes[lyricsWithTimecodes.length - 1]?.line !== interludeText
   ) {
